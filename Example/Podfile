@@ -1,0 +1,12 @@
+use_frameworks!
+
+target 'RxQRScanner_Example' do
+	platform :ios, '9.0'
+  pod 'RxQRScanner', :path => '../'
+
+  target 'RxQRScanner_Tests' do
+    inherit! :search_paths
+
+    
+  end
+end
