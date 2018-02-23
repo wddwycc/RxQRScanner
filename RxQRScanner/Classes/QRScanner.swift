@@ -3,7 +3,6 @@ import RxSwift
 
 
 public enum QRScanResult {
-    case fail
     case success(String)
     case cancel
 }

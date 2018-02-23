@@ -49,7 +49,7 @@ class NavigationController: UINavigationController {
     override var preferredInterfaceOrientationForPresentation: UIInterfaceOrientation { return .portrait }
 }
 
-internal func imagePicker(config: QRScanConfig) -> UIImagePickerController {
+func imagePicker(config: QRScanConfig) -> UIImagePickerController {
     let picker = UIImagePickerController()
     if let navTintColor = config.navTintColor {
         picker.navigationBar.tintColor = navTintColor

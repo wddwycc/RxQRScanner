@@ -32,19 +32,13 @@ class ViewController: UIViewController {
         label.centerX(to: button)
 
         button.rx.tap
-            .flatMap { QRScanner.popup(on: self) }
-            .subscribe(onNext: { [weak self] (result) in
-                switch result {
-                case .success(let str):
-                    self?.label.text = "Got \(str)"
-                default: break
-                }
+            .flatMap { [unowned self] in QRScanner.popup(on: self) }
+            .map({ (result) -> String? in
+                if case let .success(str) = result { return str }
+                return nil
             })
+            .bind(to: label.rx.text)
             .disposed(by: disposeBag)
-    }
-
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
     }
 }
 
