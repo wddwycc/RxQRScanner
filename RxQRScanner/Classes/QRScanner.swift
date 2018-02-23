@@ -11,6 +11,8 @@ public enum QRScanResult {
 public struct QRScanConfig {
     public var continuous: Bool
     public var scannerColor: UIColor
+    public var navTintColor: UIColor?
+    public var titleText: String
     public var cancelText: String
     public var albumText: String
     public var noFeatureOnImageText: String
@@ -19,6 +21,8 @@ public struct QRScanConfig {
         return QRScanConfig.init(
             continuous: false,
             scannerColor: UIColor.init(hex: 0x0CBB2A),
+            navTintColor: nil,
+            titleText: "Scan QR",
             cancelText: "Cancel",
             albumText: "Album",
             noFeatureOnImageText: "Cannot Find feature on image"

@@ -25,12 +25,16 @@ public class QRScannerViewController: UIViewController {
 
     override public func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = UIColor.gray
-
+        title = config.titleText
         navigationItem.leftBarButtonItem = UIBarButtonItem.init(
-            title: config.cancelText, style: .done, target: self, action: #selector(didPressCancel))
+            title: config.cancelText, style: .plain, target: self, action: #selector(didPressCancel))
         navigationItem.rightBarButtonItem = UIBarButtonItem.init(
             title: config.albumText, style: .plain, target: self, action: #selector(didPressAlbum))
+        if let navTintColor = config.navTintColor {
+            navigationController?.navigationBar.tintColor = navTintColor
+        }
+
+        view.backgroundColor = UIColor.gray
 
         animView = QRScannerAnimationView.init(frame: CGRect.zero, highlightColor: config.scannerColor)
         animView.translatesAutoresizingMaskIntoConstraints = false

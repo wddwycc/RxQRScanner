@@ -21,7 +21,9 @@ class ViewController: UIViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        QRScanner.popup(on: self)
+        var config = QRScanConfig.instance
+        config.navTintColor = UIColor.gray
+        QRScanner.popup(on: self, config: config)
             .subscribe(onNext: { (result) in
                 print(result)
             })
