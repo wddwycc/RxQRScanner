@@ -1,6 +1,5 @@
 # RxQRScanner
 
-[![CI Status](http://img.shields.io/travis/wddwyss@gmail.com/RxQRScanner.svg?style=flat)](https://travis-ci.org/wddwyss@gmail.com/RxQRScanner)
 [![Version](https://img.shields.io/cocoapods/v/RxQRScanner.svg?style=flat)](http://cocoapods.org/pods/RxQRScanner)
 [![License](https://img.shields.io/cocoapods/l/RxQRScanner.svg?style=flat)](http://cocoapods.org/pods/RxQRScanner)
 [![Platform](https://img.shields.io/cocoapods/p/RxQRScanner.svg?style=flat)](http://cocoapods.org/pods/RxQRScanner)
@@ -10,6 +9,9 @@
 To run the example project, clone the repo, and run `pod install` from the Example directory first.
 
 ## Requirements
+
+* iOS >= 9.0
+* Swift 4
 
 ## Installation
 

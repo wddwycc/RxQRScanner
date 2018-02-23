@@ -23,6 +23,10 @@ public class QRScannerViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
 
+    public override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        return .portrait
+    }
+
     override public func viewDidLoad() {
         super.viewDidLoad()
         title = config.titleText
@@ -91,8 +95,10 @@ public class QRScannerViewController: UIViewController {
     }
 
     @objc func didPressAlbum() {
-        // todo: check auth
         let picker = UIImagePickerController()
+        if let navTintColor = config.navTintColor {
+            picker.navigationBar.tintColor = navTintColor
+        }
         picker.sourceType = .photoLibrary
         picker.delegate = self
         present(picker, animated: true, completion: nil)
