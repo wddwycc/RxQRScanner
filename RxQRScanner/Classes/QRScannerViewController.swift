@@ -23,9 +23,11 @@ public class QRScannerViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
 
+    public override var shouldAutorotate: Bool { return false }
+    public override var supportedInterfaceOrientations: UIInterfaceOrientationMask { return .portrait }
+
     override public func viewDidLoad() {
         super.viewDidLoad()
-        navigationController?.delegate = self
         title = config.titleText
         navigationItem.leftBarButtonItem = UIBarButtonItem.init(
             title: config.cancelText, style: .plain, target: self, action: #selector(didPressCancel))
@@ -147,7 +149,7 @@ public class QRScannerViewController: UIViewController {
     }
 }
 
-extension QRScannerViewController: AVCaptureMetadataOutputObjectsDelegate {
+extension QRScannerViewController: AVCaptureMetadataOutputObjectsDelegate, UINavigationControllerDelegate {
     public func metadataOutput(_ output: AVCaptureMetadataOutput,
                                didOutput metadataObjects: [AVMetadataObject],
                                from connection: AVCaptureConnection) {
@@ -155,12 +157,6 @@ extension QRScannerViewController: AVCaptureMetadataOutputObjectsDelegate {
         guard let str = object.stringValue else { return }
         session?.stopRunning()
         dismissWith(str: str)
-    }
-}
-
-extension QRScannerViewController: UINavigationControllerDelegate {
-    public func navigationControllerSupportedInterfaceOrientations(_ navigationController: UINavigationController) -> UIInterfaceOrientationMask {
-        return .portrait
     }
 }
 

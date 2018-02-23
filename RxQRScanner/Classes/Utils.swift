@@ -20,3 +20,8 @@ extension UIImage {
         return UIImage(named: named, in: bundle, compatibleWith: nil)
     }
 }
+
+class NavigationController: UINavigationController {
+    override var supportedInterfaceOrientations: UIInterfaceOrientationMask { return .portrait }
+    override var preferredInterfaceOrientationForPresentation: UIInterfaceOrientation { return .portrait }
+}
