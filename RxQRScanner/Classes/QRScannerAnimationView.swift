@@ -78,7 +78,11 @@ class QRScannerAnimationView: UIView {
         setupComponentsLayout()
     }
 
-    func startScanning() {
+    func toggleAnim(on: Bool) {
+        if on { start() } else { stop() }
+    }
+
+    private func start() {
         setComponents(hidden: false) { [weak self] in
             guard let self_ = self else { return }
             let moveAnim = CABasicAnimation(keyPath: "transform")
@@ -113,7 +117,7 @@ class QRScannerAnimationView: UIView {
         }
     }
 
-    func stopScanning(completion: (() -> ())? = nil) {
+    private func stop(completion: (() -> ())? = nil) {
         let layerWithAnimation = [stickLayer, aboveGradientLayer,
                                   belowGradientLayer, aboveGradientLayerMask,
                                   belowGradientLayerMask]
@@ -134,10 +138,10 @@ class QRScannerAnimationView: UIView {
     }
 
     private func animateToFrame(frame: CGRect) {
-        stopScanning { [weak self] in
+        stop { [weak self] in
             self?.frame = frame
             self?.setupComponentsLayout()
-            self?.startScanning()
+            self?.start()
         }
     }
 

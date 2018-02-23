@@ -22,6 +22,39 @@ extension UIImage {
 }
 
 class NavigationController: UINavigationController {
+    var config: QRScanConfig?
+
+    init(rootViewController: UIViewController, config: QRScanConfig) {
+        self.config = config
+        super.init(rootViewController: rootViewController)
+    }
+
+    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        if let navTintColor = config?.navTintColor {
+            navigationController?.navigationBar.tintColor = navTintColor
+        }
+    }
+
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask { return .portrait }
     override var preferredInterfaceOrientationForPresentation: UIInterfaceOrientation { return .portrait }
 }
+
+internal func imagePicker(config: QRScanConfig) -> UIImagePickerController {
+    let picker = UIImagePickerController()
+    if let navTintColor = config.navTintColor {
+        picker.navigationBar.tintColor = navTintColor
+    }
+    picker.sourceType = .photoLibrary
+    return picker
+}
+

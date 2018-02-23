@@ -1,21 +1,25 @@
 import UIKit
 import RxSwift
+import RxCocoa
 import AVFoundation
 
 
 public class QRScannerViewController: UIViewController {
     let publisher = PublishSubject<QRScanResult>()
     let config: QRScanConfig
+    let disposeBag = DisposeBag()
 
-    private var animView: QRScannerAnimationView!
+    private var animView: QRScannerAnimationView
+
+    var session: AVCaptureSession?
     private lazy var ciContext: CIContext? = {
         guard let eaglContext = EAGLContext(api: EAGLRenderingAPI.openGLES2) else { return nil }
         return CIContext(eaglContext: eaglContext)
     }()
-    var session: AVCaptureSession?
 
     init(config: QRScanConfig) {
         self.config = config
+        animView = QRScannerAnimationView.init(frame: CGRect.zero, highlightColor: config.scannerColor)
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -23,23 +27,15 @@ public class QRScannerViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
 
-    public override var shouldAutorotate: Bool { return false }
-    public override var supportedInterfaceOrientations: UIInterfaceOrientationMask { return .portrait }
-
     override public func viewDidLoad() {
         super.viewDidLoad()
-        title = config.titleText
-        navigationItem.leftBarButtonItem = UIBarButtonItem.init(
-            title: config.cancelText, style: .plain, target: self, action: #selector(didPressCancel))
-        navigationItem.rightBarButtonItem = UIBarButtonItem.init(
-            title: config.albumText, style: .plain, target: self, action: #selector(didPressAlbum))
-        if let navTintColor = config.navTintColor {
-            navigationController?.navigationBar.tintColor = navTintColor
-        }
-
         view.backgroundColor = UIColor.gray
+        title = config.titleText
+        let cancelButton = UIBarButtonItem.init(title: config.cancelText, style: .plain, target: nil, action: nil)
+        let albumButton = UIBarButtonItem.init(title: config.albumText, style: .plain, target: nil, action: nil)
+        navigationItem.leftBarButtonItem = cancelButton
+        navigationItem.rightBarButtonItem = albumButton
 
-        animView = QRScannerAnimationView.init(frame: CGRect.zero, highlightColor: config.scannerColor)
         animView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(animView)
         NSLayoutConstraint.activate([
@@ -50,20 +46,37 @@ public class QRScannerViewController: UIViewController {
         ])
         animView.isHidden = true
 
-        NotificationCenter.default.addObserver(
-            forName: NSNotification.Name.UIApplicationDidBecomeActive,
-            object: nil, queue: OperationQueue.main) { [weak self] _ in
-                self?.animView.startScanning()
-                self?.session?.startRunning()
-        }
-        NotificationCenter.default.addObserver(
-            forName: NSNotification.Name.UIApplicationDidEnterBackground,
-            object: nil, queue: OperationQueue.main) { [weak self] _ in
-                self?.animView.stopScanning()
-                self?.session?.stopRunning()
-        }
+        Observable
+            .merge([
+                NotificationCenter.default.rx.notification(.UIApplicationDidBecomeActive).map { _ in true },
+                NotificationCenter.default.rx.notification(.UIApplicationDidEnterBackground).map { _ in false },
+            ])
+            .subscribe(onNext: { [weak self] on in
+                self?.animView.toggleAnim(on: on)
+                if on { self?.session?.startRunning() } else { self?.session?.stopRunning() }
+            })
+            .disposed(by: disposeBag)
+
+        cancelButton.rx.tap
+            .map { _ in QRScanResult.cancel }
+            .subscribe(onNext: { [weak self] (rv) in
+                self?.publisher.onNext(rv)
+                self?.publisher.onCompleted()
+                self?.navigationController?.dismiss(animated: true, completion: nil)
+            })
+            .disposed(by: disposeBag)
+
+        albumButton.rx.tap
+            .subscribe(onNext: { [weak self] _ in
+                guard let self_ = self else { return }
+                let pickerVC = imagePicker(config: self_.config)
+                pickerVC.delegate = self
+                self_.present(pickerVC, animated: true, completion: nil)
+            })
+            .disposed(by: disposeBag)
 
         let status = AVCaptureDevice.authorizationStatus(for: .video)
+        AVCaptureDevice.authorizationStatus(for: .video)
         switch status {
             case .restricted:
                 break
@@ -80,27 +93,9 @@ public class QRScannerViewController: UIViewController {
         }
     }
 
-    deinit {
-        NotificationCenter.default.removeObserver(self)
-    }
-
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        animView.startScanning()
-    }
-
-    @objc func didPressCancel() {
-        navigationController?.dismiss(animated: true, completion: nil)
-    }
-
-    @objc func didPressAlbum() {
-        let picker = UIImagePickerController()
-        if let navTintColor = config.navTintColor {
-            picker.navigationBar.tintColor = navTintColor
-        }
-        picker.sourceType = .photoLibrary
-        picker.delegate = self
-        present(picker, animated: true, completion: nil)
+        animView.toggleAnim(on: true)
     }
 
     private func initCamera() throws {

@@ -34,7 +34,7 @@ public final class QRScanner {
     public static func popup(on vc: UIViewController,
                              config: QRScanConfig = QRScanConfig.instance) -> Observable<QRScanResult> {
         let qrVC = QRScannerViewController.init(config: config)
-        let navVC = NavigationController.init(rootViewController: qrVC)
+        let navVC = NavigationController.init(rootViewController: qrVC, config: config)
         vc.present(navVC, animated: true, completion: nil)
         return qrVC.publisher.asObserver()
     }
