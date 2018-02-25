@@ -31,14 +31,14 @@ class ViewController: UIViewController {
         label.topToBottom(of: button)
         label.centerX(to: button)
 
-button.rx.tap
-    .flatMap { [unowned self] in QRScanner.popup(on: self) }
-    .map({ (result) -> String? in
-        if case let .success(str) = result { return str }
-        return nil
-    })
-    .bind(to: label.rx.text)
-    .disposed(by: disposeBag)
+        button.rx.tap
+            .flatMap { [unowned self] in QRScanner.popup(on: self) }
+            .map({ (result) -> String? in
+                if case let .success(str) = result { return str }
+                return nil
+            })
+            .bind(to: label.rx.text)
+            .disposed(by: disposeBag)
     }
 }
 

@@ -7,7 +7,18 @@
 
 **Popup QRScanner like a boss**
 
-![](https://storage.googleapis.com/duan/etc/6AC48FA6-621C-4792-BB45-A68DB2710E4C/carbon.png)
+```swift
+import RxQRScanner
+
+button.rx.tap
+    .flatMap { [unowned self] in QRScanner.popup(on: self) }
+    .map({ (result) -> String? in
+        if case let .success(str) = result { return str }
+        return nil
+    })
+    .bind(to: label.rx.text)
+    .disposed(by: disposeBag)
+```
 
 ## Example
 
