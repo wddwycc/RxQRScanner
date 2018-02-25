@@ -4,6 +4,11 @@
 [![License](https://img.shields.io/cocoapods/l/RxQRScanner.svg?style=flat)](http://cocoapods.org/pods/RxQRScanner)
 [![Platform](https://img.shields.io/cocoapods/p/RxQRScanner.svg?style=flat)](http://cocoapods.org/pods/RxQRScanner)
 
+
+**Popup QRScanner like a boss**
+
+![](https://storage.googleapis.com/duan/etc/6AC48FA6-621C-4792-BB45-A68DB2710E4C/carbon.png)
+
 ## Example
 
 To run the example project, clone the repo, and run `pod install` from the Example directory first.
