@@ -33,6 +33,6 @@ public final class QRScanner {
         let qrVC = QRScannerViewController.init(config: config)
         let navVC = NavigationController.init(rootViewController: qrVC, config: config)
         vc.present(navVC, animated: true, completion: nil)
-        return qrVC.result()
+        return qrVC.result
     }
 }

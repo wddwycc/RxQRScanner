@@ -42,16 +42,14 @@ class NavigationController: UINavigationController {
     override var preferredInterfaceOrientationForPresentation: UIInterfaceOrientation { return .portrait }
 }
 
-protocol ObservableViewController {
+protocol CallbackObservable {
     associatedtype Result
-    func result() -> Observable<Result>
+    var result: PublishSubject<Result> { get }
 }
 
-func imagePicker(config: QRScanConfig) -> UIImagePickerController {
-    let picker = UIImagePickerController()
-    if let navTintColor = config.navTintColor {
-        picker.navigationBar.tintColor = navTintColor
+extension CallbackObservable where Self: UIViewController {
+    func popup(on: UIViewController, animated: Bool = true) -> Observable<Result> {
+        on.present(self, animated: animated, completion: nil)
+        return self.result
     }
-    picker.sourceType = .photoLibrary
-    return picker
 }

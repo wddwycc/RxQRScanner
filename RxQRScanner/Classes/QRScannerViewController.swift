@@ -4,18 +4,16 @@ import RxCocoa
 import AVFoundation
 
 
-class QRScannerViewController: UIViewController {
-    private let publisher = PublishSubject<QRScanResult>()
-    let config: QRScanConfig
-    let disposeBag = DisposeBag()
+class QRScannerViewController: UIViewController, CallbackObservable {
+    typealias Result = QRScanResult
+    var result = PublishSubject<Result>()
+    private let disposeBag = DisposeBag()
 
-    private var animView: QRScannerAnimationView
-
-    var session: AVCaptureSession?
-    private lazy var ciContext: CIContext? = {
-        guard let eaglContext = EAGLContext(api: EAGLRenderingAPI.openGLES2) else { return nil }
-        return CIContext(eaglContext: eaglContext)
-    }()
+    private let config: QRScanConfig
+    private let animView: QRScannerAnimationView
+    private lazy var qrImageDetector: QRImageDetector = QRImageDetector.init(config: self.config)
+    var delegate: DelegateProxy<AnyObject, Any>?
+    private var session: AVCaptureSession?
 
     init(config: QRScanConfig) {
         self.config = config
@@ -44,34 +42,47 @@ class QRScannerViewController: UIViewController {
             animView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             animView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
         ])
-        animView.isHidden = true
+        animView.alpha = 0
 
         Observable
             .merge([
                 NotificationCenter.default.rx.notification(.UIApplicationDidBecomeActive).map { _ in true },
                 NotificationCenter.default.rx.notification(.UIApplicationDidEnterBackground).map { _ in false },
             ])
+            .filter { [weak self] _ in self?.view.window != nil }
             .subscribe(onNext: { [weak self] on in
-                self?.animView.toggleAnim(on: on)
-                if on { self?.session?.startRunning() } else { self?.session?.stopRunning() }
+                self?.toggleScan(on: on)
             })
             .disposed(by: disposeBag)
 
         cancelButton.rx.tap
             .map { _ in QRScanResult.cancel }
             .subscribe(onNext: { [weak self] (rv) in
-                self?.publisher.onNext(rv)
-                self?.publisher.onCompleted()
+                self?.result.onNext(rv)
+                self?.result.onCompleted()
                 self?.navigationController?.dismiss(animated: true, completion: nil)
             })
             .disposed(by: disposeBag)
 
         albumButton.rx.tap
-            .subscribe(onNext: { [weak self] _ in
-                guard let self_ = self else { return }
-                let pickerVC = imagePicker(config: self_.config)
-                pickerVC.delegate = self
-                self_.present(pickerVC, animated: true, completion: nil)
+            .do(onNext: { [unowned self] _ in self.toggleScan(on: false) })
+            .flatMap { [unowned self] _ -> Observable<QRImageDetectResult> in
+                return self.qrImageDetector.popup(on: self)
+            }
+            .do(onNext: { [unowned self] result in
+                if case .success(_) = result { return }
+                self.toggleScan(on: true)
+            })
+            .subscribe(onNext: { [weak self] (result) in
+                switch result {
+                case .success(let str):
+                    self?.result.onNext(.success(str))
+                    self?.result.onCompleted()
+                    self?.navigationController?.dismiss(animated: true, completion: nil)
+                case .fail:
+                    self?.navigationItem.prompt = self?.config.noFeatureOnImageText
+                default: break
+                }
             })
             .disposed(by: disposeBag)
 
@@ -132,18 +143,27 @@ class QRScannerViewController: UIViewController {
         cameraLayer.frame = view.layer.bounds
         view.layer.insertSublayer(cameraLayer, below: animView.layer)
         view.layoutIfNeeded()
-        session.startRunning()
-        animView.isHidden = false
         self.session = session
+        toggleScan(on: true)
     }
 
-    private func dismissWith(str: String) {
-        publisher.onNext(.success(str))
-        publisher.onCompleted()
-        dismiss(animated: true, completion: nil)
+    private func toggleScan(on: Bool) {
+        if on {
+            self.session?.startRunning()
+        } else {
+            self.session?.stopRunning()
+        }
+        UIView.animate(withDuration: 0.2) {
+            if self.session == nil {
+                self.animView.alpha = 0
+            } else {
+                self.animView.alpha = on ? 1 : 0
+            }
+        }
     }
 }
 
+// todo: replace with Rx Style
 extension QRScannerViewController: AVCaptureMetadataOutputObjectsDelegate, UINavigationControllerDelegate {
     public func metadataOutput(_ output: AVCaptureMetadataOutput,
                                didOutput metadataObjects: [AVMetadataObject],
@@ -151,46 +171,8 @@ extension QRScannerViewController: AVCaptureMetadataOutputObjectsDelegate, UINav
         guard let object = metadataObjects.first as? AVMetadataMachineReadableCodeObject else { return }
         guard let str = object.stringValue else { return }
         session?.stopRunning()
-        dismissWith(str: str)
-    }
-}
-
-extension QRScannerViewController: ObservableViewController {
-    typealias Result = QRScanResult
-    func result() -> Observable<QRScanResult> {
-        return self.publisher.asObservable()
-    }
-}
-
-extension QRScannerViewController: UIImagePickerControllerDelegate {
-    @objc public func imagePickerController(_ picker: UIImagePickerController,
-                                            didFinishPickingMediaWithInfo info: [String : Any]) {
-        guard let image = info[UIImagePickerControllerOriginalImage] as? UIImage else {
-            return
-        }
-        picker.dismiss(animated: true) { [weak self] in
-            self?.validate(image: image)
-        }
-    }
-    
-
-    func validate(image: UIImage) {
-        guard let ciContext = self.ciContext else {
-            print("Cannot init CIContext")
-            return
-        }
-        guard let detector = CIDetector(ofType: CIDetectorTypeQRCode, context: ciContext, options: [CIDetectorAccuracy: CIDetectorAccuracyHigh]) else {
-            print("Cannot init CIDetector")
-            return
-        }
-        guard let ciImage = CIImage(image: image) else {
-            navigationItem.prompt = "Cannot Convert UIImage to CIImage"
-            return
-        }
-        guard let feature = detector.features(in: ciImage).first as? CIQRCodeFeature, let str = feature.messageString else {
-            navigationItem.prompt = config.noFeatureOnImageText
-            return
-        }
-        dismissWith(str: str)
+        toggleScan(on: false)
+        result.onNext(.success(str))
+        result.onCompleted()
     }
 }
