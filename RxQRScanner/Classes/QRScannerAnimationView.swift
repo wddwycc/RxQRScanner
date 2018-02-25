@@ -2,20 +2,20 @@ import UIKit
 
 
 class QRScannerAnimationView: UIView {
-    let contentView = UIView()
-    let aboveGridImageView: UIImageView = {
+    private let contentView = UIView()
+    private let aboveGridImageView: UIImageView = {
         let imageView = UIImageView(image: UIImage.bundleImage(named: "grid.png"))
         imageView.contentMode = .center
         imageView.alpha = 0.3
         return imageView
     }()
-    let belowGridImageView: UIImageView = {
+    private let belowGridImageView: UIImageView = {
         let imageView = UIImageView(image: UIImage.bundleImage(named: "grid.png"))
         imageView.contentMode = .center
         imageView.alpha = 0.3
         return imageView
     }()
-    lazy var stickLayer: CALayer = {
+    private lazy var stickLayer: CALayer = {
         let layer = CALayer()
         layer.backgroundColor = self.color.cgColor
         layer.cornerRadius = 1.5
@@ -27,34 +27,34 @@ class QRScannerAnimationView: UIView {
         layer.shouldRasterize = true
         return layer
     }()
-    lazy var aboveGradientLayer: CAGradientLayer = {
+    private lazy var aboveGradientLayer: CAGradientLayer = {
         let layer = CAGradientLayer()
         layer.colors = [UIColor.clear.cgColor,
                         self.color.withAlphaComponent(0.4).cgColor]
         return layer
     }()
-    lazy var belowGradientLayer: CAGradientLayer = {
+    private lazy var belowGradientLayer: CAGradientLayer = {
         let layer = CAGradientLayer()
         layer.colors = [self.color.withAlphaComponent(0.4).cgColor,
                         UIColor.clear.cgColor]
         layer.opacity = 0.5
         return layer
     }()
-    let aboveGradientLayerMask: CAGradientLayer = {
+    private let aboveGradientLayerMask: CAGradientLayer = {
         let layer = CAGradientLayer()
         layer.colors = [UIColor.black.cgColor, UIColor.black.cgColor]
         return layer
     }()
-    let belowGradientLayerMask: CAGradientLayer = {
+    private let belowGradientLayerMask: CAGradientLayer = {
         let layer = CAGradientLayer()
         layer.colors = [UIColor.black.cgColor, UIColor.black.cgColor]
         return layer
     }()
 
-    let color: UIColor
+    private let color: UIColor
 
-    init(frame: CGRect, highlightColor: UIColor) {
-        self.color = highlightColor
+    init(frame: CGRect, color: UIColor) {
+        self.color = color
         super.init(frame: frame)
         self.addSubview(contentView)
         contentView.addSubview(aboveGridImageView)

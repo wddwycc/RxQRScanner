@@ -1,4 +1,5 @@
 import UIKit
+import RxSwift
 
 
 extension UIColor {
@@ -22,11 +23,11 @@ extension UIImage {
 }
 
 class NavigationController: UINavigationController {
-    var config: QRScanConfig?
-
     init(rootViewController: UIViewController, config: QRScanConfig) {
-        self.config = config
         super.init(rootViewController: rootViewController)
+        if let navTintColor = config.navTintColor {
+            navigationBar.tintColor = navTintColor
+        }
     }
 
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
@@ -37,16 +38,13 @@ class NavigationController: UINavigationController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        if let navTintColor = config?.navTintColor {
-            navigationController?.navigationBar.tintColor = navTintColor
-        }
-    }
-
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask { return .portrait }
     override var preferredInterfaceOrientationForPresentation: UIInterfaceOrientation { return .portrait }
+}
+
+protocol ObservableViewController {
+    associatedtype Result
+    func result() -> Observable<Result>
 }
 
 func imagePicker(config: QRScanConfig) -> UIImagePickerController {
@@ -57,4 +55,3 @@ func imagePicker(config: QRScanConfig) -> UIImagePickerController {
     picker.sourceType = .photoLibrary
     return picker
 }
-

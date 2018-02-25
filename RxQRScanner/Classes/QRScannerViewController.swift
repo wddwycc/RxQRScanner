@@ -4,8 +4,8 @@ import RxCocoa
 import AVFoundation
 
 
-public class QRScannerViewController: UIViewController {
-    let publisher = PublishSubject<QRScanResult>()
+class QRScannerViewController: UIViewController {
+    private let publisher = PublishSubject<QRScanResult>()
     let config: QRScanConfig
     let disposeBag = DisposeBag()
 
@@ -19,7 +19,7 @@ public class QRScannerViewController: UIViewController {
 
     init(config: QRScanConfig) {
         self.config = config
-        animView = QRScannerAnimationView.init(frame: CGRect.zero, highlightColor: config.scannerColor)
+        animView = QRScannerAnimationView.init(frame: CGRect.zero, color: config.scannerColor)
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -152,6 +152,13 @@ extension QRScannerViewController: AVCaptureMetadataOutputObjectsDelegate, UINav
         guard let str = object.stringValue else { return }
         session?.stopRunning()
         dismissWith(str: str)
+    }
+}
+
+extension QRScannerViewController: ObservableViewController {
+    typealias Result = QRScanResult
+    func result() -> Observable<QRScanResult> {
+        return self.publisher.asObservable()
     }
 }
 

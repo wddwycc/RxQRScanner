@@ -8,7 +8,6 @@ public enum QRScanResult {
 }
 
 public struct QRScanConfig {
-    public var continuous: Bool
     public var scannerColor: UIColor
     public var navTintColor: UIColor?
     public var titleText: String
@@ -18,7 +17,6 @@ public struct QRScanConfig {
 
     public static var instance: QRScanConfig {
         return QRScanConfig.init(
-            continuous: false,
             scannerColor: UIColor.init(hex: 0x0CBB2A),
             navTintColor: nil,
             titleText: "Scan QR",
@@ -35,6 +33,6 @@ public final class QRScanner {
         let qrVC = QRScannerViewController.init(config: config)
         let navVC = NavigationController.init(rootViewController: qrVC, config: config)
         vc.present(navVC, animated: true, completion: nil)
-        return qrVC.publisher.asObserver()
+        return qrVC.result()
     }
 }
