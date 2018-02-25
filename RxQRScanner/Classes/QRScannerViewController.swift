@@ -182,6 +182,7 @@ extension QRScannerViewController: AVCaptureMetadataOutputObjectsDelegate, UINav
         toggleScan(on: false)
         result.onNext(.success(str))
         result.onCompleted()
+        navigationController?.dismiss(animated: true, completion: nil)
     }
 }
 
