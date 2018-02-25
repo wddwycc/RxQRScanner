@@ -85,22 +85,19 @@ class QRScannerViewController: UIViewController, CallbackObservable {
             })
             .disposed(by: disposeBag)
 
-        let status = AVCaptureDevice.authorizationStatus(for: .video)
-        AVCaptureDevice.authorizationStatus(for: .video)
-        switch status {
-            case .restricted:
-                break
-            case .authorized:
-                try? initCamera()
-            case .denied:
-                break
-            case .notDetermined:
-                AVCaptureDevice.requestAccess(for: .video, completionHandler: { [weak self] (success) in
-                    DispatchQueue.main.async {
-                        try? self?.initCamera()
-                    }
-                })
-        }
+        videoAccess()
+            .observeOn(MainScheduler.instance)
+            .subscribe(onNext: { [weak self] (status) in
+                switch status {
+                case .authorized:
+                    try? self?.initCamera()
+                case .denied:
+                    self?.showEmptyView()
+                default:
+                    break
+                }
+            })
+            .disposed(by: disposeBag)
     }
 
     public override func viewWillAppear(_ animated: Bool) {
@@ -160,6 +157,18 @@ class QRScannerViewController: UIViewController, CallbackObservable {
             }
         }
     }
+
+    private func showEmptyView() {
+        let emptyView = QREmptyView.init(type: .denied)
+        emptyView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(emptyView)
+        NSLayoutConstraint.activate([
+            emptyView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            emptyView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            emptyView.topAnchor.constraint(equalTo: view.topAnchor),
+            emptyView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+        ])
+    }
 }
 
 // todo: replace with Rx Style
@@ -173,5 +182,19 @@ extension QRScannerViewController: AVCaptureMetadataOutputObjectsDelegate, UINav
         toggleScan(on: false)
         result.onNext(.success(str))
         result.onCompleted()
+    }
+}
+
+fileprivate func videoAccess() -> Observable<AVAuthorizationStatus> {
+    let status = AVCaptureDevice.authorizationStatus(for: .video)
+    return Observable.create { (observer) -> Disposable in
+        if case .notDetermined = status {
+            AVCaptureDevice.requestAccess(for: .video, completionHandler: { (success) in
+                observer.onNext(success ? .authorized : .denied)
+            })
+        } else {
+            observer.onNext(status)
+        }
+        return Disposables.create()
     }
 }

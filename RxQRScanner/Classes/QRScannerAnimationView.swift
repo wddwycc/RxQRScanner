@@ -4,13 +4,13 @@ import UIKit
 class QRScannerAnimationView: UIView {
     private let contentView = UIView()
     private let aboveGridImageView: UIImageView = {
-        let imageView = UIImageView(image: UIImage.bundleImage(named: "grid.png"))
+        let imageView = UIImageView(image: .bundleImage(named: "grid.png"))
         imageView.contentMode = .center
         imageView.alpha = 0.3
         return imageView
     }()
     private let belowGridImageView: UIImageView = {
-        let imageView = UIImageView(image: UIImage.bundleImage(named: "grid.png"))
+        let imageView = UIImageView(image: .bundleImage(named: "grid.png"))
         imageView.contentMode = .center
         imageView.alpha = 0.3
         return imageView
