@@ -52,6 +52,7 @@ class QRScannerViewController: UIViewController, CallbackObservable {
             .filter { [weak self] _ in self?.view.window != nil }
             .subscribe(onNext: { [weak self] on in
                 self?.toggleScan(on: on)
+                self?.animView.toggleAnim(on: on)
             })
             .disposed(by: disposeBag)
 
@@ -66,9 +67,7 @@ class QRScannerViewController: UIViewController, CallbackObservable {
 
         albumButton.rx.tap
             .do(onNext: { [unowned self] _ in self.toggleScan(on: false) })
-            .flatMap { [unowned self] _ -> Observable<QRImageDetectResult> in
-                return self.qrImageDetector.popup(on: self)
-            }
+            .flatMap { [unowned self] in self.qrImageDetector.popup(on: self) }
             .do(onNext: { [unowned self] result in
                 if case .success(_) = result { return }
                 self.toggleScan(on: true)
