@@ -10,15 +10,17 @@ public enum QRScanResult {
 public struct QRScanConfig {
     public var scannerColor: UIColor
     public var navTintColor: UIColor?
+    public var navBarTintColor: UIColor?
     public var titleText: String
     public var cancelText: String
     public var albumText: String
     public var noFeatureOnImageText: String
 
     public static var instance: QRScanConfig {
-        return QRScanConfig.init(
+        return QRScanConfig(
             scannerColor: UIColor.init(hex: 0x0CBB2A),
             navTintColor: nil,
+            navBarTintColor: nil,
             titleText: "Scan QR",
             cancelText: "Cancel",
             albumText: "Album",

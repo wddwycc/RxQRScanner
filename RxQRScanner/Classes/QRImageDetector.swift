@@ -19,6 +19,11 @@ class QRImageDetector: NSObject, UIImagePickerControllerDelegate, UINavigationCo
         pickerVC.sourceType = .photoLibrary
         if let navTintColor = self.config.navTintColor {
             pickerVC.navigationBar.tintColor = navTintColor
+            let textAttributes = [NSAttributedStringKey.foregroundColor:navTintColor]
+            pickerVC.navigationBar.titleTextAttributes = textAttributes
+        }
+        if let navBarTintColor = config.navBarTintColor {
+            pickerVC.navigationBar.barTintColor = navBarTintColor
         }
         pickerVC.delegate = self
         return pickerVC
