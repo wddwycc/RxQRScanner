@@ -8,8 +8,8 @@
 
 Pod::Spec.new do |s|
   s.name             = 'RxQRScanner'
-  s.version          = '1.2.0'
-  s.swift_version    = '4.0'
+  s.version          = '1.3.0'
+  s.swift_version    = '4.1'
   s.summary          = 'QRScanner in RxSwift way'
 
 # This description is used to generate tags and improve search results.

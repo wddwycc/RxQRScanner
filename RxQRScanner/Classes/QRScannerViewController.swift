@@ -27,7 +27,7 @@ class QRScannerViewController: UIViewController, CallbackObservable {
 
     override public func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = UIColor.gray
+        view.backgroundColor = UIColor.black
         title = config.titleText
         let cancelButton = UIBarButtonItem.init(title: config.cancelText, style: .plain, target: nil, action: nil)
         let albumButton = UIBarButtonItem.init(title: config.albumText, style: .plain, target: nil, action: nil)
@@ -85,7 +85,9 @@ class QRScannerViewController: UIViewController, CallbackObservable {
             })
             .disposed(by: disposeBag)
 
-        videoAccess()
+        rx.methodInvoked(#selector(viewDidAppear(_:)))
+            .take(1)
+            .flatMap { _ in videoAccess() }
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: { [weak self] (status) in
                 switch status {
@@ -98,6 +100,7 @@ class QRScannerViewController: UIViewController, CallbackObservable {
                 }
             })
             .disposed(by: disposeBag)
+
     }
 
     public override func viewWillAppear(_ animated: Bool) {
