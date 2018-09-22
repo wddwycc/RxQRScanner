@@ -46,8 +46,8 @@ class QRScannerViewController: UIViewController, CallbackObservable {
 
         Observable
             .merge([
-                NotificationCenter.default.rx.notification(.UIApplicationDidBecomeActive).map { _ in true },
-                NotificationCenter.default.rx.notification(.UIApplicationDidEnterBackground).map { _ in false },
+                NotificationCenter.default.rx.notification(UIApplication.didBecomeActiveNotification).map { _ in true },
+                NotificationCenter.default.rx.notification(UIApplication.didEnterBackgroundNotification).map { _ in false },
             ])
             .filter { [weak self] _ in self?.view.window != nil }
             .subscribe(onNext: { [weak self] on in

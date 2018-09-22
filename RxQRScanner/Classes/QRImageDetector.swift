@@ -19,7 +19,7 @@ class QRImageDetector: NSObject, UIImagePickerControllerDelegate, UINavigationCo
         pickerVC.sourceType = .photoLibrary
         if let navTintColor = self.config.navTintColor {
             pickerVC.navigationBar.tintColor = navTintColor
-            let textAttributes = [NSAttributedStringKey.foregroundColor:navTintColor]
+            let textAttributes = [NSAttributedString.Key.foregroundColor:navTintColor]
             pickerVC.navigationBar.titleTextAttributes = textAttributes
         }
         if let navBarTintColor = config.navBarTintColor {
@@ -38,9 +38,10 @@ class QRImageDetector: NSObject, UIImagePickerControllerDelegate, UINavigationCo
         return self.result
     }
 
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
+    func imagePickerController(_ picker: UIImagePickerController,
+                               didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         picker.dismiss(animated: true, completion: { [weak self] in
-            if let image = info[UIImagePickerControllerOriginalImage] as? UIImage {
+            if let image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
                 self?.result.onNext(image.detectQR())
             } else {
                 self?.result.onNext(QRImageDetectResult.fail)

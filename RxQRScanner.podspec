@@ -8,8 +8,8 @@
 
 Pod::Spec.new do |s|
   s.name             = 'RxQRScanner'
-  s.version          = '1.3.0'
-  s.swift_version    = '4.1'
+  s.version          = '1.4.0'
+  s.swift_version    = '4.2'
   s.summary          = 'QRScanner in RxSwift way'
 
 # This description is used to generate tags and improve search results.
@@ -39,6 +39,6 @@ Popup QRScanner like a boss
 
   # s.public_header_files = 'Pod/Classes/**/*.h'
   # s.frameworks = 'UIKit', 'MapKit'
-  s.dependency 'RxSwift', '~> 4.0'
-  s.dependency 'RxCocoa', '~> 4.0'
+  s.dependency 'RxSwift', '~> 4.3'
+  s.dependency 'RxCocoa', '~> 4.3'
 end

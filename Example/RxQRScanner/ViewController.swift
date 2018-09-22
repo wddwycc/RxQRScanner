@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import TinyConstraints
 import RxSwift
 import RxCocoa
 import RxQRScanner
@@ -15,21 +14,25 @@ import RxQRScanner
 
 class ViewController: UIViewController {
 
-    let button = UIButton()
-    let label = UILabel()
-    let disposeBag = DisposeBag()
+    private let disposeBag = DisposeBag()
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        let button = UIButton()
         button.setTitle("Start Scanner", for: .normal)
         button.setTitleColor(UIColor.blue, for: .normal)
         view.addSubview(button)
-        button.center(in: view)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        button.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+
+        let label = UILabel()
         label.textColor = .gray
         view.addSubview(label)
-        label.topToBottom(of: button)
-        label.centerX(to: button)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.topAnchor.constraint(equalTo: button.bottomAnchor).isActive = true
+        label.centerXAnchor.constraint(equalTo: button.centerXAnchor).isActive = true
 
         var config = QRScanConfig.instance
         config.navTintColor = UIColor.white

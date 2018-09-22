@@ -27,7 +27,7 @@ class NavigationController: UINavigationController {
         super.init(rootViewController: rootViewController)
         if let navTintColor = config.navTintColor {
             navigationBar.tintColor = navTintColor
-            let textAttributes = [NSAttributedStringKey.foregroundColor:navTintColor]
+            let textAttributes = [NSAttributedString.Key.foregroundColor:navTintColor]
             navigationBar.titleTextAttributes = textAttributes
         }
         if let navBarTintColor = config.navBarTintColor {

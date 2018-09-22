@@ -55,7 +55,7 @@ class QREmptyView: UIView {
 
         button.rx.tap
             .subscribe(onNext: {
-                UIApplication.shared.openURL(URL(string:UIApplicationOpenSettingsURLString)!)
+                UIApplication.shared.openURL(URL(string:UIApplication.openSettingsURLString)!)
             })
             .disposed(by: disposeBag)
     }
