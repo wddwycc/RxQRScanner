@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'RxQRScanner'
-  s.version          = '1.4.0'
+  s.version          = '1.4.1'
   s.swift_version    = '4.2'
   s.summary          = 'QRScanner in RxSwift way'
 

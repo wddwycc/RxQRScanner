@@ -9,6 +9,7 @@ public enum QRScanResult {
 
 public struct QRScanConfig {
     public var scannerColor: UIColor
+    public var cameraViewBackgroundColor: UIColor?
     public var navTintColor: UIColor?
     public var navBarTintColor: UIColor?
     public var titleText: String
@@ -19,6 +20,7 @@ public struct QRScanConfig {
     public static var instance: QRScanConfig {
         return QRScanConfig(
             scannerColor: UIColor.init(hex: 0x0CBB2A),
+            cameraViewBackgroundColor: nil,
             navTintColor: nil,
             navBarTintColor: nil,
             titleText: "Scan QR",

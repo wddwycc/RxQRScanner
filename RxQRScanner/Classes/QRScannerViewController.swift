@@ -27,7 +27,7 @@ class QRScannerViewController: UIViewController, CallbackObservable {
 
     override public func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = UIColor.black
+        view.backgroundColor = config.cameraViewBackgroundColor ?? UIColor.black
         title = config.titleText
         let cancelButton = UIBarButtonItem.init(title: config.cancelText, style: .plain, target: nil, action: nil)
         let albumButton = UIBarButtonItem.init(title: config.albumText, style: .plain, target: nil, action: nil)
