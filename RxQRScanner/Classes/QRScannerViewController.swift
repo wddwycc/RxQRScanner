@@ -20,7 +20,7 @@ class QRScannerViewController: UIViewController, CallbackObservable {
         animView = QRScannerAnimationView.init(frame: CGRect.zero, color: config.scannerColor)
         super.init(nibName: nil, bundle: nil)
     }
-    
+
     required public init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }

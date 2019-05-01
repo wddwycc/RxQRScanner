@@ -19,7 +19,7 @@ public struct QRScanConfig {
 
     public static var instance: QRScanConfig {
         return QRScanConfig(
-            scannerColor: UIColor.init(hex: 0x0CBB2A),
+            scannerColor: UIColor(hex: 0x0CBB2A),
             cameraViewBackgroundColor: nil,
             navTintColor: nil,
             navBarTintColor: nil,
