@@ -27,7 +27,7 @@ To run the example project, clone the repo, and run `pod install` from the Examp
 ## Requirements
 
 * iOS >= 9.0
-* Swift 4
+* Swift 5
 
 ## Installation
 
@@ -35,7 +35,7 @@ RxQRScanner is available through [CocoaPods](http://cocoapods.org). To install
 it, simply add the following line to your Podfile:
 
 ```ruby
-pod 'RxQRScanner'
+pod 'RxQRScanner', '~> 4.0'
 ```
 
 ## Author
