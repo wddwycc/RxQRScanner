@@ -14,10 +14,11 @@ class QRImageDetector: NSObject, UIImagePickerControllerDelegate, UINavigationCo
 
     let config: QRScanConfig
     let result = PublishSubject<QRImageDetectResult>()
-    lazy var pickerVC: UIImagePickerController = {
-        let pickerVC = UIImagePickerController()
+    lazy var pickerVC: ImagePickerController = {
+        let pickerVC = ImagePickerController()
+        pickerVC.statusBarStyle = config.statusBarStyle
         pickerVC.sourceType = .photoLibrary
-        if let navTintColor = self.config.navTintColor {
+        if let navTintColor = config.navTintColor {
             pickerVC.navigationBar.tintColor = navTintColor
             let textAttributes = [NSAttributedString.Key.foregroundColor:navTintColor]
             pickerVC.navigationBar.titleTextAttributes = textAttributes

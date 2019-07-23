@@ -37,6 +37,7 @@ class ViewController: UIViewController {
         var config = QRScanConfig.instance
         config.navTintColor = UIColor.white
         config.navBarTintColor = UIColor.black
+        config.statusBarStyle = .lightContent
         button.rx.tap
             .flatMap { [unowned self] in QRScanner.popup(on: self, config: config) }
             .map({ (result) -> String? in

@@ -16,6 +16,7 @@ public struct QRScanConfig {
     public var cancelText: String
     public var albumText: String
     public var noFeatureOnImageText: String
+    public var statusBarStyle: UIStatusBarStyle
 
     public static var instance: QRScanConfig {
         return QRScanConfig(
@@ -26,7 +27,8 @@ public struct QRScanConfig {
             titleText: "Scan QR",
             cancelText: "Cancel",
             albumText: "Album",
-            noFeatureOnImageText: "Cannot Find feature on image"
+            noFeatureOnImageText: "Cannot Find feature on image",
+            statusBarStyle: .default
         )
     }
 }
