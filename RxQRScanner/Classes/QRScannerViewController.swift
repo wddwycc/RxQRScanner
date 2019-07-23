@@ -6,7 +6,7 @@ import AVFoundation
 
 class QRScannerViewController: UIViewController, CallbackObservable {
     typealias Result = QRScanResult
-    var result = PublishSubject<Result>()
+    let result = PublishSubject<Result>()
     private let disposeBag = DisposeBag()
 
     private let config: QRScanConfig
@@ -57,11 +57,8 @@ class QRScannerViewController: UIViewController, CallbackObservable {
             .disposed(by: disposeBag)
 
         cancelButton.rx.tap
-            .map { _ in QRScanResult.cancel }
-            .subscribe(onNext: { [weak self] (rv) in
-                self?.result.onNext(rv)
-                self?.result.onCompleted()
-                self?.navigationController?.dismiss(animated: true, completion: nil)
+            .subscribe(onNext: { [unowned self] _ in
+                self.dismiss(with: .cancel)
             })
             .disposed(by: disposeBag)
 
@@ -75,9 +72,7 @@ class QRScannerViewController: UIViewController, CallbackObservable {
             .subscribe(onNext: { [weak self] (result) in
                 switch result {
                 case .success(let str):
-                    self?.result.onNext(.success(str))
-                    self?.result.onCompleted()
-                    self?.navigationController?.dismiss(animated: true, completion: nil)
+                    self?.dismiss(with: .success(str))
                 case .fail:
                     self?.navigationItem.prompt = self?.config.noFeatureOnImageText
                 default: break
@@ -172,6 +167,14 @@ class QRScannerViewController: UIViewController, CallbackObservable {
             emptyView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
     }
+
+    private func dismiss(with result: QRScanResult) {
+        let subject = self.result
+        navigationController?.dismiss(animated: true, completion: {
+            subject.onNext(result)
+            subject.onCompleted()
+        })
+    }
 }
 
 // todo: replace with Rx Style
@@ -183,9 +186,7 @@ extension QRScannerViewController: AVCaptureMetadataOutputObjectsDelegate, UINav
         guard let str = object.stringValue else { return }
         session?.stopRunning()
         toggleScan(on: false)
-        result.onNext(.success(str))
-        result.onCompleted()
-        navigationController?.dismiss(animated: true, completion: nil)
+        dismiss(with: .success(str))
     }
 }
 

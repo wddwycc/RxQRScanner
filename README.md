@@ -35,7 +35,7 @@ RxQRScanner is available through [CocoaPods](http://cocoapods.org). To install
 it, simply add the following line to your Podfile:
 
 ```ruby
-pod 'RxQRScanner', '~> 4.0'
+pod 'RxQRScanner', '~> 2.0'
 ```
 
 ## Author
