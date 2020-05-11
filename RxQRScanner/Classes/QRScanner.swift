@@ -40,6 +40,7 @@ public final class QRScanner {
     ) -> Observable<QRScanResult> {
         let qrVC = QRScannerViewController(config: config)
         let navVC = NavigationController(rootViewController: qrVC, config: config)
+        navVC.modalPresentationStyle = .fullScreen
         vc.present(navVC, animated: true, completion: nil)
         return qrVC.result
     }

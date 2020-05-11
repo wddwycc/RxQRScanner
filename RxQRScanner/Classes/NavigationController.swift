@@ -22,6 +22,7 @@ class NavigationController: UINavigationController {
         if let navBarTintColor = config.navBarTintColor {
             navigationBar.barTintColor = navBarTintColor
         }
+        navigationBar.barStyle = .black
         self.config = config
     }
 

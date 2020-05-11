@@ -19,9 +19,8 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        let button = UIButton()
+        let button = UIButton.init(type: .system)
         button.setTitle("Start Scanner", for: .normal)
-        button.setTitleColor(UIColor.blue, for: .normal)
         view.addSubview(button)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
@@ -35,8 +34,8 @@ class ViewController: UIViewController {
         label.centerXAnchor.constraint(equalTo: button.centerXAnchor).isActive = true
 
         var config = QRScanConfig.instance
-        config.navTintColor = UIColor.white
-        config.navBarTintColor = UIColor.black
+        config.navTintColor = .white
+        config.navBarTintColor = .black
         config.statusBarStyle = .lightContent
         button.rx.tap
             .flatMap { [unowned self] in QRScanner.popup(on: self, config: config) }

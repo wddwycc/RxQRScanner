@@ -18,6 +18,7 @@ class QRImageDetector: NSObject, UIImagePickerControllerDelegate, UINavigationCo
         let pickerVC = ImagePickerController()
         pickerVC.statusBarStyle = config.statusBarStyle
         pickerVC.sourceType = .photoLibrary
+        pickerVC.modalPresentationStyle = .fullScreen
         if let navTintColor = config.navTintColor {
             pickerVC.navigationBar.tintColor = navTintColor
             let textAttributes = [NSAttributedString.Key.foregroundColor:navTintColor]
@@ -49,6 +50,7 @@ class QRImageDetector: NSObject, UIImagePickerControllerDelegate, UINavigationCo
             }
         })
     }
+
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         picker.dismiss(animated: true) { [weak self] in
             self?.result.onNext(.cancel)
@@ -58,20 +60,19 @@ class QRImageDetector: NSObject, UIImagePickerControllerDelegate, UINavigationCo
 
 extension UIImage {
     func detectQR() -> QRImageDetectResult {
-        guard let eaglContext = EAGLContext(api: EAGLRenderingAPI.openGLES2) else {
-            return .internalError("Cannot init CIContext")
-        }
-        let context = CIContext(eaglContext: eaglContext)
-        guard let detector = CIDetector(ofType: CIDetectorTypeQRCode, context: context,
-                                        options: [CIDetectorAccuracy: CIDetectorAccuracyHigh]) else {
-            return .internalError("Cannot init CIDetector")
-        }
-        guard let ciImage = CIImage(image: self) else {
-            return .internalError("Cannot Convert UIImage to CIImage")
-        }
-        guard let feature = detector.features(in: ciImage).first as? CIQRCodeFeature, let str = feature.messageString else {
-            return .fail
-        }
-        return .success(str)
+        guard let detector = MTLCreateSystemDefaultDevice()
+            .flatMap(CIContext.init)
+            .flatMap({
+                CIDetector(ofType: CIDetectorTypeQRCode, context: $0,
+                           options: [CIDetectorAccuracy: CIDetectorAccuracyHigh])
+            }) else {
+                return .internalError("Cannot init CIDetector")
+            }
+        return CIImage(image: self)
+            .flatMap(detector.features(in:))
+            .flatMap(\.first)
+            .flatMap({ $0 as? CIQRCodeFeature })
+            .flatMap(\.messageString)
+            .map(QRImageDetectResult.success) ?? .fail
     }
 }
